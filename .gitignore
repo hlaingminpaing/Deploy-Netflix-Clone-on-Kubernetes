@@ -26,3 +26,36 @@ npm-debug.log*
 yarn.lock
 yarn-debug.log*
 yarn-error.log*
+
+# Local Terraform files
+# Terraform state files
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+*.tfstate.lock.info
+terraform.tfstate
+terraform.tfstate.backup
+
+# Terraform plan files
+*.tfplan
+*.tfplan.*
+
+# Terraform variables file (uncomment if it contains secrets)
+# terraform.tfvars
+# *.tfvars
+
+# Terraform override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform lock file (uncomment if you don't want to commit it)
+# .terraform.lock.hcl
+
+# Terraform provider and module directories (downloaded during `terraform init`)
+.terraform/
+
+# Terraform crash logs
+crash.log
+crash.*.log
