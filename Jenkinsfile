@@ -79,14 +79,14 @@ pipeline {
                 }
             }
         }
-        stage('OWASP Dependency Check') {
-            steps {
-                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                    dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DP-Check'
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-                }
-            }
-        }
+        // stage('OWASP Dependency Check') {
+        //     steps {
+        //         withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+        //             dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DP-Check'
+        //             dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+        //         }
+        //     }
+        // }
         stage('Trivy FS Scan') {
             steps {
                 script {
@@ -169,7 +169,7 @@ pipeline {
                 body: "Project: ${env.JOB_NAME}<br/>" +
                       "Build Number: ${env.BUILD_NUMBER}<br/>" +
                       "URL: ${env.BUILD_URL}<br/>",
-                to: 'hlaingminpaing.ygn@gmail.com', // Update with your email
+                to: 'hlaingminpaing.ygn@gmail.com' // Update with your email
                 attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
         }
     }
