@@ -1,0 +1,50 @@
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    podMonitorSelector: {}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "ebs-sc"   # your EBS CSI storage class
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi           # adjust size as needed
+
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: admin123
+  persistence:
+    enabled: true
+    storageClassName: "ebs-sc"     # same EBS storage class
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi                       # adjust size as needed
+  service:
+    type: LoadBalancer
+    port: 80
+
+alertmanager:
+  alertmanagerSpec:
+    replicas: 1
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "ebs-sc"
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi           # adjust size as needed
+
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+prometheusOperator:
+  createCustomResource: true
+  serviceAccount:
+    create: true

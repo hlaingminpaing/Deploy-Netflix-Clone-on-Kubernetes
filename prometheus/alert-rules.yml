@@ -1,0 +1,65 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: digital-wallet-alert-rules
+  labels:
+    # This label is used by the values.yaml to select these rules.
+    app: digital-wallet-monitoring
+spec:
+  groups:
+  - name: digital-wallet.rules
+    rules:
+    # --- Recording Rules ---
+
+    # Rule to calculate the transaction success rate over the last 5 minutes.
+    - record: job:transactions_success_rate:5m
+      expr: |
+        sum(rate(http_requests_duration_seconds_count{job="transactions-service", status_code=~"2.."}[5m]))
+        /
+        sum(rate(http_requests_duration_seconds_count{job="transactions-service"}[5m]))
+        * 100
+
+    # Rule to calculate the transaction failure rate over the last 5 minutes.
+    - record: job:transactions_failure_rate:5m
+      expr: |
+        sum(rate(http_requests_duration_seconds_count{job="transactions-service", status_code=~"[45].."}[5m]))
+        /
+        sum(rate(http_requests_duration_seconds_count{job="transactions-service"}[5m]))
+        * 100
+
+    # Rule to estimate the number of active users in the last 5 minutes
+    # by counting unique user_ids making requests to the transactions-service.
+    - record: job:active_users:5m
+      expr: |
+        count(count by (user_id) (rate(http_requests_duration_seconds_count{job="transactions-service", user_id!=""}[5m])))
+
+    # --- Alerting Rules ---
+
+    - alert: ServiceDown
+      expr: up == 0
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Service {{ $labels.job }} is down."
+        description: "Prometheus has been unable to scrape the {{ $labels.job }} service for over 1 minute."
+
+    # Note: The express-prom-bundle provides latency as http_requests_duration_seconds.
+    # The default buckets are in seconds, so we check for latency > 0.5s (500ms).
+    - alert: HighRequestLatency
+      expr: (histogram_quantile(0.95, sum(rate(http_requests_duration_seconds_bucket[5m])) by (le, job))) > 0.5
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High request latency on {{ $labels.job }}."
+        description: "The 95th percentile request latency for {{ $labels.job }} is over 500ms."
+
+    - alert: HighTransactionFailureRate
+      expr: job:transactions_failure_rate:5m > 10
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High transaction failure rate."
+        description: "More than 10% of transactions have failed over the last 5 minutes. Current rate: {{ $value }}%"
