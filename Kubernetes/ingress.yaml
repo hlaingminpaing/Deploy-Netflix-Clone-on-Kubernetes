@@ -45,13 +45,13 @@ spec:
                 name: netflix-app
                 port:
                   number: 80
-    # - host: youtube.myanmartechsolutions.site
-    #   http:
-    #     paths:
-    #       - path: /
-    #         pathType: Prefix
-    #         backend:
-    #           service:
-    #             name: youtube-clone
-    #             port:
-    #               number: 80
+    - host: grafana.myanmartechsolutions.site
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-stack-grafana   # Grafana service name
+                port:
+                  number: 80
