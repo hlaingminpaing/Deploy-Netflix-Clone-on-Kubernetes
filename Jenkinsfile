@@ -148,7 +148,7 @@ pipeline {
                         dir('Kubernetes') {
                             withKubeConfig(
                                 credentialsId: "${KUBERNETES_CREDENTIALS_ID}",
-                                serverUrl: 'https://C5057FA74F0B8846E031E81BA49B8CEB.gr7.ap-southeast-1.eks.amazonaws.com', // Replace with actual EKS endpoint
+                                serverUrl: 'https://BB493E81FD87EF61BB3DB644BFC7D606.yl4.ap-southeast-7.eks.amazonaws.com', // Replace with actual EKS endpoint
                                 namespace: "${K8S_NAMESPACE}"
                             ) {
                                 sh 'kubectl version'
